@@ -15,6 +15,12 @@
                               {:name "apple" :amount 7}
                               {:name "kiwi" :amount 2}])
 
+(defn list-fruits [remove-fruit! fruits]
+  (h/html
+   [:ul
+    (for [f fruits]
+      (list-item #(remove-fruit! f) f))]))
+
 (defn my-component []
   (let [[fruits set-fruits!] (react/useState initial-fruit-inventory)
         remove-fruit! (fn [f]
@@ -23,11 +29,9 @@
      [:div.foo {:style {:border "solid 1px black"}}
       (if (seq fruits)
         (h/html
-         [:div
+         [:<>
           [:b "here's the fruits we have:"]
-          [:ul
-           (for [f fruits]
-             (list-item #(remove-fruit! f) f))]])
+          [list-fruits remove-fruit! fruits]])
         (h/html
          [:div "oh noes, we have no fruits"]))])))
 
