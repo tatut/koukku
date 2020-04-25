@@ -37,7 +37,7 @@
         id (element-id element-kw)
         [props children] (props-and-children body)
         props (merge props
-                     (when class-names
+                     (when (seq class-names)
                        {:className (str/join " " class-names)})
                      (when id
                        {:id id}))]
