@@ -33,10 +33,13 @@
    #js []
    (mapcat #(if (seq? %) % [%]) children)))
 
-(defn component-fn-host [props _children]
-  (let [comp-fn (aget props "component-fn")
-        args (aget props "args")]
-    (apply comp-fn args)))
+(defn component-fn-host [comp-name]
+  (let [host (fn [props _children]
+               (let [comp-fn (aget props "component-fn")
+                     args (aget props "args")]
+                 (apply comp-fn args)))]
+    (set! (.-displayName host) comp-name)
+    host))
 
 (defn ->elt [element props children]
   (react/createElement element

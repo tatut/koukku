@@ -61,7 +61,7 @@
         args (subvec body 1)]
     (log "compile-component, component-fn=" component-fn ", args=" args)
     `(koukku.html/->elt
-      koukku.html/component-fn-host
+      (koukku.html/component-fn-host ~(str component-fn))
       ;; PENDING: check element is valid? (like symbol)
       (cljs.core/js-obj "component-fn" ~component-fn
                         "args" ~args)
