@@ -29,6 +29,6 @@ Like:
         [:ul
           (for [item items]
             (list-item item))]
-        [:button {:onClick #(set-items! (conj items "new item"))}
+        [:button {:onClick #(set-items! (conj items {:name "new item"}))}
          "add item"]])))
 ```
