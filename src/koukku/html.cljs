@@ -1,6 +1,9 @@
 (ns koukku.html
   (:require-macros [koukku.html])
-  (:require react))
+  (:require react
+            [goog.object :as gobj]))
+
+(def ^:dynamic *key* nil)
 
 (defn ->js [x]
   (cond
@@ -36,12 +39,26 @@
 (defn component-fn-host [comp-name]
   (let [host (fn [props _children]
                (let [comp-fn (aget props "component-fn")
-                     args (aget props "args")]
-                 (apply comp-fn args)))]
+                     args (aget props "args")
+                     key (aget props "key")]
+                 (binding [*key* key]
+                   (apply comp-fn args))))]
     (set! (.-displayName host) comp-name)
     host))
 
-(defn ->elt [element props children]
-  (react/createElement element
-                       props
-                       children))
+(defn ->elt [element props & children]
+  (apply react/createElement
+         element
+         props
+         children))
+
+(defn js-comp
+  "Return JS component usable with react/createElement.
+  If comp is js object containing \"default\" key, it is
+  a required module.
+  Otherwise the component is returned as is."
+  [comp]
+  (if (and (object? comp)
+           (gobj/containsKey comp "default"))
+    (gobj/get comp "default")
+    comp))
