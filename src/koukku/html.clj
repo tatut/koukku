@@ -15,13 +15,15 @@
                (fn [m]
                  (str/upper-case (subs m 1)))))
 
+(def special-keys {:class "className"})
+
 (defn ->js
   "Compile time js conversion.
 
   Conversion rules:
   maps => (js-obj \"key1\" val1 ...)
   keywords (as value) => name string
-  keywords (as key) => camelCased name string
+  keywords (as key) => camelCased name string (or map special keys like :class => \"className\")
   vector => (array val1 ...)
 
   Other values are passed as is."
@@ -31,7 +33,8 @@
     `(cljs.core/js-obj ~@(mapcat
                           (fn [[k v]]
                             [(cond
-                               (keyword? k) (to-camel-case k)
+                               (keyword? k) (or (special-keys k)
+                                                (to-camel-case k))
                                (or (string? k)
                                    (number? k)) k
                                ;; some weird key, try runtime conversion
