@@ -64,16 +64,16 @@
 (defn todo-item [dispatch! {:keys [id description complete?]}]
   (h/html
    [:> mui-ListItem {:dense true :button true
-                     :onClick #(dispatch! {:event (if complete?
-                                                    :mark-incomplete
-                                                    :mark-complete)
-                                           :id id})}
+                     :on-click #(dispatch! {:event (if complete?
+                                                     :mark-incomplete
+                                                     :mark-complete)
+                                            :id id})}
     [:> mui-ListItemIcon
      [:> mui-Checkbox {:checked complete?}]]
     [:> mui-ListItemText {:primary description
-                          :style {:textDecoration (if complete?
-                                                    "line-through"
-                                                    "none")}}]]))
+                          :style {:text-decoration (if complete?
+                                                     "line-through"
+                                                     "none")}}]]))
 (defn todo-list [dispatch! todos]
   (h/html
    [:> mui-List {:dense true}
@@ -86,20 +86,17 @@
    [:div (count (filter :complete? todos)) " out of " (count todos) " tasks complete"]))
 
 (defn todo-form [dispatch!]
-  (let [[text set-text!] (react/useState "")]
+  (let [[text set-text!] (k/use-state "")]
     (h/html
      [:> mui-TextField {:placeholder "What needs to be done?"
                         :value text
-                        :onChange #(-> % .-target .-value set-text!)
-                        :onKeyPress #(when (and (= "Enter" (.-key %))
-                                                (not (str/blank? text)))
-                                       (dispatch! {:event :new-todo
-                                                   :description text}))}])))
+                        :on-change #(-> % .-target .-value set-text!)
+                        :on-key-press #(when (and (= "Enter" (.-key %))
+                                                  (not (str/blank? text)))
+                                         (dispatch! {:event :new-todo
+                                                     :description text}))}])))
 (defn todo-app []
-  (let [[{:keys [todos]} dispatch!] (react/useReducer (fn [app action]
-                                                        (event app action))
-
-                                                      initial-state)]
+  (let [[{:keys [todos]} dispatch!] (k/use-reducer event initial-state)]
 
     (h/html
      [:div "Here's the todos:"
