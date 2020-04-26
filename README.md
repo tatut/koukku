@@ -7,9 +7,9 @@ Contains a macro based hiccup style rendering.
 
 *WARNING* This is alpha/toy quality currently, for a mature and battle tested React wrapper please use Reagent.
 
-## API
+# API
 
-### koukku.core namespace
+## koukku.core namespace
 
 `koukku.core/main` entrypoint takes a function component and an element
 and renders the component. The element may be an element id string or an
@@ -24,7 +24,7 @@ to the body if it doesn't exist.
 It wraps the given reducer in a function so that any `ifn?` with 2-arity
 can be used as a reducer, for example a multimethod.
 
-### koukku.html namespace
+## koukku.html namespace
 
 The html namespace is the JSX equivalent and works very similar
 to hiccup in Reagent, but with some restrictions. The html is
@@ -57,6 +57,39 @@ Calling JS React components is done with:
 ```
 
 Creating fragments can be done with the pseudo element name `:<>`.
+
+### Special elements for control flow
+
+The html generation includes special elements for regular control flow
+for convenience.
+
+Included special elements are:
+- `:koukku.html/if`
+- `:koukku.html/when`
+- `:koukku.html/for`
+
+The special elements work like in clojure except the body is compiled as
+html as well. This is often convenient as breaking into Clojure code you
+need to call `koukku.html/html` to get back into html templating.
+
+```clojure
+(h/html
+ [:ul
+  [::h/for [item ["one" "two" "three"]]
+   ^{:key item}
+   [:li item]]])
+```
+
+is equivalent to the Clojure code:
+```clojure
+(h/html
+ [:ul
+   (into-array
+     (for [item ["one" "two" "three"]]
+       (h/html
+         ^{:key item}
+         [:li item])))])
+```
 
 
 ## Examples
