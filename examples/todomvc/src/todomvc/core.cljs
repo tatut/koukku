@@ -61,22 +61,25 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; The actual UI part
 
+(defn todo-item [dispatch! {:keys [id description complete?]}]
+  (h/html
+   [:> mui-ListItem {:dense true :button true
+                     :onClick #(dispatch! {:event (if complete?
+                                                    :mark-incomplete
+                                                    :mark-complete)
+                                           :id id})}
+    [:> mui-ListItemIcon
+     [:> mui-Checkbox {:checked complete?}]]
+    [:> mui-ListItemText {:primary description
+                          :style {:textDecoration (if complete?
+                                                    "line-through"
+                                                    "none")}}]]))
 (defn todo-list [dispatch! todos]
   (h/html
    [:> mui-List {:dense true}
-    [::h/for [{:keys [id description complete?]} todos]
+    [::h/for [{id :id :as todo} todos]
      ^{:key id}
-     [:> mui-ListItem {:dense true :button true
-                       :onClick #(dispatch! {:event (if complete?
-                                                      :mark-incomplete
-                                                      :mark-complete)
-                                             :id id})}
-      [:> mui-ListItemIcon
-       [:> mui-Checkbox {:checked complete?}]]
-      [:> mui-ListItemText {:primary description
-                            :style {:textDecoration (if complete?
-                                                      "line-through"
-                                                      "none")}}]]]]))
+     [todo-item dispatch! todo]]]))
 
 (defn todo-summary [todos]
   (h/html
