@@ -7,7 +7,61 @@ Contains a macro based hiccup style rendering.
 
 *WARNING* This is alpha/toy quality currently, for a mature and battle tested React wrapper please use Reagent.
 
-## Example
+## API
+
+### koukku.core namespace
+
+`koukku.core/main` entrypoint takes a function component and an element
+and renders the component. The element may be an element id string or an
+actual DOM element. If it is an id, the element will be created and added
+to the body if it doesn't exist.
+
+`koukku.core/use-state` wraps React `useState` hook.
+
+`koukku.core/use-effect` wraps React `useEffect` hook.
+
+`koukku.core/use-reducer` wraps React `useReducer` hook.
+It wraps the given reducer in a function so that any `ifn?` with 2-arity
+can be used as a reducer, for example a multimethod.
+
+### koukku.html namespace
+
+The html namespace is the JSX equivalent and works very similar
+to hiccup in Reagent, but with some restrictions. The html is
+based on a macro and tries to do as much work in compile time.
+
+`koukku.html/html` takes hiccup style markup and yields code that
+returns a React Element (by calling `react/createElement`).
+
+The basic form of markup contains a dom element, attributes
+and children, for example:
+```clojure
+[:div#thediv.someclass {:on-click #(js/alert "click")}
+  [:ul
+    [:li "first list item"]
+    [:li "second list item"]]]
+```
+
+The element name may contain an id (after `#`) and class names (each starting with `.`).
+
+Calling other ClojureScript functions as components is in the
+form
+
+```clojure
+[component-fn ...args...]
+```
+
+Calling JS React components is done with:
+```
+[:> SomeJSComponent {:some-attr value} ...children...]
+```
+
+Creating fragments can be done with the pseudo element name `:<>`.
+
+
+## Examples
+
+See todomvc example in examples/todomvc/ folder.
 
 Define components as pure functions that use React hooks.
 Use `koukku.html/html` macro to output hiccup style HTML.
@@ -19,16 +73,22 @@ Like:
   (h/html
     [:li name]))
 
-(def items [{:name "item1"}
-            {:name "item 2"}])
+(def items [{:name "item1" :id 1}
+            {:name "item 2" :id 2}])
 
 (defn listing [items]
   (let [[items set-items!] (react/useState items)]
     (h/html
       [:div.someclass
         [:ul
-          (for [item items]
-            (list-item item))]
+          [::h/for [{id :id :as item} items]
+            ^{:key id}
+            [list-item item]]]
         [:button {:onClick #(set-items! (conj items {:name "new item"}))}
          "add item"]])))
+
+(defn main-component []
+  (h/html [listing items]))
+
+(k/main main-component "app")
 ```
