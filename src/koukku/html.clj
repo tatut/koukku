@@ -171,13 +171,6 @@
       (contains? compile-special (first body))
       ((compile-special (first body)) body)
 
-      ;; :> means a JS React component
-      (= :> (first body))
-      (compile-js-component body)
-
-      (= :koukku.html/for (first body))
-      (compile-for body)
-
       ;; first element is a keyword this is static HTML markup
       (keyword? (first body))
       (compile-html-element body)
