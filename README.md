@@ -5,7 +5,9 @@ It has no library dependencies apart from React.
 
 Contains a macro based hiccup style rendering.
 
-*WARNING* This is alpha/toy quality currently, for a mature and battle tested React wrapper please use Reagent.
+**WARNING** This is very young library, for a mature and battle tested React wrapper please use Reagent.
+
+Quick start: see examples/todomvc
 
 # API
 
