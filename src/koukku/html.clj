@@ -104,10 +104,9 @@
         key (get-key body)]
     (log "compile-component, component-fn=" component-fn ", args=" args ", key=" key)
     `(koukku.html/->elt
-      (koukku.html/component-fn-host ~(str component-fn))
+      (koukku.html/component-fn-host ~(str component-fn) ~component-fn)
       ;; PENDING: check element is valid? (like symbol)
       (cljs.core/js-obj ~@(when key ["key" key])
-                        "component-fn" ~component-fn
                         "args" ~args))))
 
 (defn compile-fragment [body]
