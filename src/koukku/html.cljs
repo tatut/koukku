@@ -39,10 +39,8 @@
 (defn component-fn-host [comp-name]
   (let [host (fn [props _children]
                (let [comp-fn (aget props "component-fn")
-                     args (aget props "args")
-                     key (aget props "key")]
-                 (binding [*key* key]
-                   (apply comp-fn args))))]
+                     args (aget props "args")]
+                 (apply comp-fn args)))]
     (set! (.-displayName host) comp-name)
     host))
 
