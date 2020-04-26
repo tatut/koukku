@@ -9,6 +9,43 @@
               (str (str/join " " things) "\n"))))
   (defn log [& things]))
 
+(defn to-camel-case [kw]
+  (str/replace (name kw)
+               #"-\w"
+               (fn [m]
+                 (str/upper-case (subs m 1)))))
+
+(defn ->js
+  "Compile time js conversion.
+
+  Conversion rules:
+  maps => (js-obj \"key1\" val1 ...)
+  keywords (as value) => name string
+  keywords (as key) => camelCased name string
+  vector => (array val1 ...)
+
+  Other values are passed as is."
+  [x]
+  (cond
+    (map? x)
+    `(cljs.core/js-obj ~@(mapcat
+                          (fn [[k v]]
+                            [(cond
+                               (keyword? k) (to-camel-case k)
+                               (or (string? k)
+                                   (number? k)) k
+                               ;; some weird key, try runtime conversion
+                               :else `(koukku.html/->js k))
+                             (->js v)]) x))
+
+    (vector? x)
+    `(cljs.core/array ~@(map ->js x))
+
+    (keyword? x)
+    (name x)
+
+    :else x))
+
 (defn element-class-names [elt]
   (map second (re-seq #"\.([^.#]+)" (name elt))))
 
@@ -54,7 +91,7 @@
       ~(if (keyword? element)
          (name element)
          element)
-      (koukku.html/->js ~props)
+      ~(->js props)
 
       ~@(compile-children children))))
 
@@ -64,16 +101,16 @@
     (log "Fragment with props: " props " and key " key)
     `(koukku.html/->elt
       react/Fragment
-      ~(if key
-         `(merge {:key ~key} ~props)
-         props)
+      ~(->js (if key
+               (merge {:key key} props)
+               props))
       ~@(compile-children children))))
 
 (defn compile-component [body]
   (let [component-fn (first body)
         args (subvec body 1)
         key (get-key body)]
-    (log "compile-component, component-fn=" component-fn ", args=" args)
+    (log "compile-component, component-fn=" component-fn ", args=" args ", key=" key)
     `(koukku.html/->elt
       (koukku.html/component-fn-host ~(str component-fn))
       ;; PENDING: check element is valid? (like symbol)
@@ -89,9 +126,9 @@
     (log "JS component, component=" component ", props=" props ", children="children ", key=" key)
     `(koukku.html/->elt
       (koukku.html/js-comp ~component)
-      (koukku.html/->js ~(if key
-                           `(merge {:key ~key} ~props)
-                           props))
+      ~(->js (if key
+               (merge {:key key} props)
+               props))
       ~@(compile-children children))))
 
 (defn compile-for
