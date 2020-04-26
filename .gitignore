@@ -1,4 +1,5 @@
-/node_modules/
-/out/
-/.cpcache/
-/.nrepl-port
+**/node_modules/
+**/out/
+**/.cpcache/
+**/.nrepl-port
+**/koukku.debug
