@@ -93,6 +93,7 @@
                         :on-change #(-> % .-target .-value set-text!)
                         :on-key-press #(when (and (= "Enter" (.-key %))
                                                   (not (str/blank? text)))
+                                         (set-text! "")
                                          (dispatch! {:event :new-todo
                                                      :description text}))}])))
 (defn todo-app []
