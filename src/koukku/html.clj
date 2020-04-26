@@ -99,8 +99,7 @@
   (let [[props children] (props-and-children body)
         key (get-key body)]
     (log "Fragment with props: " props " and key " key)
-    `(koukku.html/->elt
-      react/Fragment
+    `(koukku.html/->fragment
       ~(->js (if key
                (merge {:key key} props)
                props))

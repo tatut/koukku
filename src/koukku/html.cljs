@@ -48,6 +48,12 @@
          props
          children))
 
+(defn ->fragment [props & children]
+  (apply react/createElement
+         react/Fragment
+         props
+         children))
+
 (defn js-comp
   "Return JS component usable with react/createElement.
   If comp is js object containing \"default\" key, it is
