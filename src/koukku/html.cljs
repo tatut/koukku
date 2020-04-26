@@ -3,8 +3,6 @@
   (:require react
             [goog.object :as gobj]))
 
-(def ^:dynamic *key* nil)
-
 (defn ->js [x]
   (cond
     (map? x)
