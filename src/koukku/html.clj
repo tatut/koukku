@@ -98,16 +98,6 @@
 
       ~@(compile-children children))))
 
-(defn compile-fragment [body]
-  (let [[props children] (props-and-children body)
-        key (get-key body)]
-    (log "Fragment with props: " props " and key " key)
-    `(koukku.html/->fragment
-      ~(->js (if key
-               (merge {:key key} props)
-               props))
-      ~@(compile-children children))))
-
 (defn compile-component [body]
   (let [component-fn (first body)
         args (subvec body 1)
@@ -119,6 +109,16 @@
       (cljs.core/js-obj ~@(when key ["key" key])
                         "component-fn" ~component-fn
                         "args" ~args))))
+
+(defn compile-fragment [body]
+  (let [[props children] (props-and-children body)
+        key (get-key body)]
+    (log "Fragment with props: " props " and key " key)
+    `(koukku.html/->fragment
+      ~(->js (if key
+               (merge {:key key} props)
+               props))
+      ~@(compile-children children))))
 
 (defn compile-js-component [body]
   (let [key (get-key body)
@@ -142,13 +142,34 @@
     (for ~bindings
       ~(compile-html body))))
 
+(defn compile-if
+  "Compile special :koukku.html/if element."
+  [[_ test then else :as form]]
+  (assert (= 4 (count form)) ":koukku.html/if must have exactly 3 forms: test, then and else")
+  `(if ~test
+     ~(compile-html then)
+     ~(compile-html else)))
+
+(defn compile-when
+  "Compile special :koukku.html/when element."
+  [[_ test then :as form]]
+  (assert (= 3 (count form)) ":koukku.html/when must have exactly 2 forms: test and then")
+  `(when ~test
+     ~(compile-html then)))
+
+(def compile-special {:<> compile-fragment
+                      :> compile-js-component
+                      ::for compile-for
+                      ::if compile-if
+                      ::when compile-when})
+
 (defn compile-html [body]
   (cond
     (vector? body)
     (cond
-      ;; first element is :<>, this is a fragment
-      (= :<> (first body))
-      (compile-fragment body)
+      ;; first element is special element
+      (contains? compile-special (first body))
+      ((compile-special (first body)) body)
 
       ;; :> means a JS React component
       (= :> (first body))
