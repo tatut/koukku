@@ -44,3 +44,8 @@
   (react/useReducer (fn [state action]
                       (reducer-fn state action))
                     initial-state))
+
+(defn use-context
+  "Simple wrapper for react/useContext."
+  [ctx]
+  (react/useContext ctx))
