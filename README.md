@@ -69,6 +69,7 @@ Included special elements are:
 - `:koukku.html/if`
 - `:koukku.html/when`
 - `:koukku.html/for`
+- `:koukku.html/cond`
 
 The special elements work like in clojure except the body is compiled as
 html as well. This is often convenient as breaking into Clojure code you

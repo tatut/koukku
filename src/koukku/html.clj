@@ -156,11 +156,21 @@
   `(when ~test
      ~(compile-html then)))
 
+(defn compile-cond
+  "Compile special :koukku.html/cond element."
+  [[_ & clauses]]
+  (assert (even? (count clauses)) ":koukku.html/cond must have even number of forms")
+  `(cond
+     ~@(mapcat (fn [[test expr]]
+                 [test (compile-html expr)])
+               (partition 2 clauses))))
+
 (def compile-special {:<> compile-fragment
                       :> compile-js-component
                       ::for compile-for
                       ::if compile-if
-                      ::when compile-when})
+                      ::when compile-when
+                      ::cond compile-cond})
 
 (defn compile-html [body]
   (cond
@@ -186,7 +196,8 @@
     body
 
     :else
-    (throw (ex-info "Can't compile to HTML" {:element body}))))
+    (throw (ex-info (str "Can't compile to HTML: " (pr-str body))
+                    {:element body}))))
 
 (defmacro html
   "Render hiccup HTML as React elements."
