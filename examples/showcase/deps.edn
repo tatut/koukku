@@ -1,0 +1,6 @@
+{:paths ["src"]
+ :deps {koukku {:local/root "../.."}
+        org.clojure/clojurescript {:mvn/version "1.10.741"}}
+ :aliases {:dev {:main-opts ["-m" "cljs.main" "-co" "dev-build.edn" "-v" "-c" "-r"
+                             "-w" "src"
+                             ]}}}
