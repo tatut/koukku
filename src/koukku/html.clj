@@ -1,6 +1,7 @@
 (ns koukku.html
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as str]
+            [koukku.html.markdown :as md]))
 
 (if (System/getenv "KOUKKU_DEBUG")
   (defn log [& things]
@@ -165,12 +166,21 @@
                  [test (compile-html expr)])
                (partition 2 clauses))))
 
+(defn compile-md
+  "Compile special :koukku.html/md element."
+  [body]
+  (let [[_props children] (props-and-children body)]
+    ;; PENDING: props ignored for now, could be used to
+    ;; customize generated elements
+    (-> children md/compile-md compile-html)))
+
 (def compile-special {:<> compile-fragment
                       :> compile-js-component
                       ::for compile-for
                       ::if compile-if
                       ::when compile-when
-                      ::cond compile-cond})
+                      ::cond compile-cond
+                      ::md compile-md})
 
 (defn compile-html [body]
   (cond

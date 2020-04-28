@@ -1,5 +1,7 @@
 {:paths ["src"]
- :deps {org.clojure/clojurescript {:mvn/version "1.10.741"}}
+ :deps {org.clojure/clojurescript {:mvn/version "1.10.741"}
+        org.jsoup/jsoup {:mvn/version "1.11.3"}
+        com.vladsch.flexmark/flexmark-all {:mvn/version "0.61.20"}}
  :aliases {:dev {:main-opts ["-m" "cljs.main" "-co" "dev-build.edn" "-v" "-c" "-r"
                              "-w" "src"
                              ]}}}

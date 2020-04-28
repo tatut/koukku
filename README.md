@@ -1,13 +1,25 @@
 # Koukku
 
 Koukku is a minimal npm React wrapper for hook based use.
-It has no library dependencies apart from React.
+It has no runtime library dependencies apart from React.
 
 Contains a macro based hiccup style rendering.
 
 **WARNING** This is very young library, for a mature and battle tested React wrapper please use Reagent.
 
 Quick start: see examples/todomvc
+
+**Features**
+- Lightweight and simple React interface
+- Compile time compilation of hiccup-style markup
+- Compile time markdown support
+- Easy microframework for reducer based event
+- Interface with JS React components without overhead
+
+**Goals**
+- Keep runtime dependencies very small (only React)
+- Low footprint and overhead: HMTL generation compiles to `react/createElement` calls
+- Explore compile time features
 
 # API
 
@@ -94,6 +106,12 @@ is equivalent to the Clojure code:
          [:li item])))])
 ```
 
+## koukku.events namespace
+
+koukku.events provides a protocol based reducer abstraction
+on top of React useReducer.
+
+See namespace docstring and `koukku.events/with-state` and `koukku.events/e!`.
 
 ## Examples
 
